@@ -118,7 +118,6 @@ kphp::coro::task<array<mixed>> f$confdata_get_values_by_any_wildcard(string wild
   auto stream{*std::move(expected_stream)};
   kphp::stl::vector<std::byte, kphp::memory::script_allocator> response{};
   response.reserve(CONFDATA_GET_WILDCARD_INIT_BUFFER_CAPACITY);
-  auto task{kphp::component::query(stream, tls.view(), kphp::component::read_ext::append(response))};
   auto callback{kphp::component::read_ext::append(response)};
   if (!co_await kphp::coro::on_stack(
           [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, auto callback_arg) noexcept {

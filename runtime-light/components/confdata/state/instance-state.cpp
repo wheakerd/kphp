@@ -34,7 +34,6 @@ auto update_handler(std::span<const tl::confdata::KeyValuePair> events) noexcept
 } // namespace
 
 auto InstanceState::init() noexcept -> void {
-  auto main_task{run()};
   // spawn main task onto the scheduler
   kphp::log::assertion(m_io_scheduler.spawn(&InstanceState::run, this));
 }

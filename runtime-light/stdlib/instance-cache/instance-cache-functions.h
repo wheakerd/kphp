@@ -65,8 +65,15 @@ kphp::coro::task<bool> f$instance_cache_store(string key, InstanceType instance,
 
   auto stream{*std::move(expected_stream)};
   std::array<std::byte, tl::Bool{}.footprint()> response{};
-  auto task{kphp::component::query(stream, tls.view(), response)};
-  if (!co_await kphp::coro::on_stack(kphp::forks::id_managed<decltype(task)>, std::move(task))) [[unlikely]] {
+  if (!co_await kphp::coro::on_stack(
+          [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+            return kphp::forks::id_managed(
+                [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+                  return kphp::component::query(stream_arg, request_arg, response_arg);
+                },
+                std::reference_wrapper{stream_arg}, request_arg, response_arg);
+          },
+          stream, tls.view(), std::span<std::byte>{response})) [[unlikely]] {
     co_return false;
   }
 
@@ -96,8 +103,13 @@ kphp::coro::task<InstanceType> f$instance_cache_fetch(string /*class_name*/, str
 
   auto stream{*std::move(expected_stream)};
   kphp::stl::vector<std::byte, kphp::memory::script_allocator> response{};
-  auto task{kphp::component::query(stream, tls.view(), kphp::component::read_ext::append(response))};
-  if (!co_await kphp::coro::on_stack(kphp::forks::id_managed<decltype(task)>, std::move(task))) [[unlikely]] {
+  auto callback{kphp::component::read_ext::append(response)};
+  if (!co_await kphp::coro::on_stack(
+          [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, auto callback_arg) noexcept {
+            return kphp::forks::id_managed(kphp::component::query<decltype(callback_arg)>, std::reference_wrapper{stream_arg}, request_arg,
+                                           std::move(callback_arg));
+          },
+          stream, tls.view(), std::move(callback))) [[unlikely]] {
     co_return InstanceType{};
   }
 
@@ -136,8 +148,15 @@ inline kphp::coro::task<bool> f$instance_cache_update_ttl(string key, int64_t tt
 
   auto stream{*std::move(expected_stream)};
   std::array<std::byte, tl::Bool{}.footprint()> response{};
-  auto task{kphp::component::query(stream, tls.view(), response)};
-  if (!co_await kphp::coro::on_stack(kphp::forks::id_managed<decltype(task)>, std::move(task))) [[unlikely]] {
+  if (!co_await kphp::coro::on_stack(
+          [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+            return kphp::forks::id_managed(
+                [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+                  return kphp::component::query(stream_arg, request_arg, response_arg);
+                },
+                std::reference_wrapper{stream_arg}, request_arg, response_arg);
+          },
+          stream, tls.view(), std::span<std::byte>{response})) [[unlikely]] {
     co_return false;
   }
 
@@ -161,8 +180,15 @@ inline kphp::coro::task<bool> f$instance_cache_delete(string key) noexcept {
 
   auto stream{*std::move(expected_stream)};
   std::array<std::byte, tl::Bool{}.footprint()> response{};
-  auto task{kphp::component::query(stream, tls.view(), response)};
-  if (!co_await kphp::coro::on_stack(kphp::forks::id_managed<decltype(task)>, std::move(task))) [[unlikely]] {
+  if (!co_await kphp::coro::on_stack(
+          [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+            return kphp::forks::id_managed(
+                [](kphp::component::stream& stream_arg, std::span<const std::byte> request_arg, std::span<std::byte> response_arg) noexcept {
+                  return kphp::component::query(stream_arg, request_arg, response_arg);
+                },
+                std::reference_wrapper{stream_arg}, request_arg, response_arg);
+          },
+          stream, tls.view(), std::span<std::byte>{response})) [[unlikely]] {
     co_return false;
   }
 
